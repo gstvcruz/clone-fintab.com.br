@@ -17,7 +17,7 @@ export default async function migrations(req, res) {
     const pendingMigrations = await migrationRunner({
       ...defaultMigrationOptions,
     });
-    dbClient.end();
+    await dbClient.end();
 
     return res.status(200).json(pendingMigrations);
   }
@@ -27,7 +27,7 @@ export default async function migrations(req, res) {
       ...defaultMigrationOptions,
       dryRun: false,
     });
-    dbClient.end();
+    await dbClient.end();
 
     return migratedMigrations.length === 0
       ? res.status(200).json(migratedMigrations)
