@@ -1,6 +1,10 @@
 import database from "infra/database";
+import orchestrator from "tests/orchestrator";
 
-beforeAll(database.cleanDatabase);
+beforeAll(async () => {
+  await orchestrator.waitForAllServices();
+  await database.cleanDatabase();
+});
 
 test("POST to /api/v1/migrations with pending migrations should return 201", async () => {
   const res = await fetch("http://localhost:3000/api/v1/migrations", {
