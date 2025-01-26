@@ -13,10 +13,6 @@ async function query(qryObj) {
   }
 }
 
-async function cleanDatabase() {
-  await query("DROP SCHEMA public CASCADE; CREATE SCHEMA public;");
-}
-
 async function getNewClient() {
   const client = new Client({
     host: process.env.POSTGRES_HOST,
@@ -33,7 +29,6 @@ async function getNewClient() {
 
 const database = {
   query,
-  cleanDatabase,
   getNewClient,
 };
 

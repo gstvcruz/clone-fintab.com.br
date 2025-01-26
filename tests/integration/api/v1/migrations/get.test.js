@@ -1,16 +1,19 @@
-import database from "infra/database";
 import orchestrator from "tests/orchestrator";
 
 beforeAll(async () => {
   await orchestrator.waitForAllServices();
-  await database.cleanDatabase();
+  await orchestrator.cleanDatabase();
 });
 
-test("GET to /api/v1/migrations should return 200", async () => {
-  const res = await fetch("http://localhost:3000/api/v1/migrations");
-  expect(res.status).toBe(200);
+describe("GET /api/v1/migrations", () => {
+  describe("Anonymous user", () => {
+    test("Retrieve migrations", async () => {
+      const res = await fetch("http://localhost:3000/api/v1/migrations");
+      expect(res.status).toBe(200);
 
-  const body = await res.json();
-  expect(Array.isArray(body)).toBe(true);
-  expect(body.length).toBeGreaterThan(0);
+      const body = await res.json();
+      expect(Array.isArray(body)).toBe(true);
+      expect(body.length).toBeGreaterThan(0);
+    });
+  });
 });
