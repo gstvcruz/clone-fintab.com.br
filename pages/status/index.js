@@ -7,10 +7,6 @@ async function fetchAPI(key) {
 }
 
 export default function StatusPage() {
-  useSWR("/api/v1/status", fetchAPI, {
-    refreshInterval: 2000,
-  });
-
   return (
     <>
       <h1>status</h1>
