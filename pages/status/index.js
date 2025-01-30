@@ -30,7 +30,7 @@ function UpdatedAt() {
     updatedAtText = new Date(data.updated_at).toLocaleString("en-us");
   }
 
-  return <p>ast updated: {updatedAtText}</p>;
+  return <p>last updated: {updatedAtText}</p>;
 }
 
 function DatabaseInfo() {
