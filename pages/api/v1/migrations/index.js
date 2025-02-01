@@ -1,48 +1,65 @@
+import { createRouter } from "next-connect";
 import migrationRunner from "node-pg-migrate";
 import { resolve } from "node:path";
 import database from "infra/database";
+import { InternalServerError, MethodNotAllowedError } from "infra/errors";
 
-export default async function migrations(req, res) {
-  const allowedMethods = ["GET", "POST"];
-  if (!allowedMethods.includes(req.method)) {
-    return res.status(405).end();
-  }
+const router = createRouter();
 
-  let dbClient;
-  try {
-    dbClient = await database.getNewClient();
+router.get(async (req, res) => {
+  const dbClient = await database.getNewClient();
 
-    const defaultMigrationOptions = {
-      dbClient,
-      dir: resolve("infra", "migrations"),
-      direction: "up",
-      dryRun: true,
-      verbose: true,
-      migrationsTable: "pgmigrations",
-    };
+  const defaultMigrationOptions = {
+    dbClient,
+    dir: resolve("infra", "migrations"),
+    direction: "up",
+    dryRun: true,
+    verbose: true,
+    migrationsTable: "pgmigrations",
+  };
 
-    if (req.method === "GET") {
-      const pendingMigrations = await migrationRunner({
-        ...defaultMigrationOptions,
-      });
+  const pendingMigrations = await migrationRunner({
+    ...defaultMigrationOptions,
+  });
 
-      return res.status(200).json(pendingMigrations);
-    }
+  await dbClient.end();
 
-    if (req.method === "POST") {
-      const migratedMigrations = await migrationRunner({
-        ...defaultMigrationOptions,
-        dryRun: false,
-      });
+  return res.status(200).json(pendingMigrations);
+});
 
-      return migratedMigrations.length === 0
-        ? res.status(200).json(migratedMigrations)
-        : res.status(201).json(migratedMigrations);
-    }
-  } catch (err) {
-    console.error(err);
-    throw err;
-  } finally {
-    await dbClient.end();
-  }
-}
+router.post(async (req, res) => {
+  const dbClient = await database.getNewClient();
+
+  const defaultMigrationOptions = {
+    dbClient,
+    dir: resolve("infra", "migrations"),
+    direction: "up",
+    dryRun: true,
+    verbose: true,
+    migrationsTable: "pgmigrations",
+  };
+
+  const migratedMigrations = await migrationRunner({
+    ...defaultMigrationOptions,
+    dryRun: false,
+  });
+
+  await dbClient.end();
+
+  return migratedMigrations.length === 0
+    ? res.status(200).json(migratedMigrations)
+    : res.status(201).json(migratedMigrations);
+});
+
+export default router.handler({
+  onNoMatch: (req, res) => {
+    const publicError = new MethodNotAllowedError();
+    return res.status(publicError.statusCode).json(publicError);
+  },
+  onError: (err, req, res) => {
+    const publicError = new InternalServerError(err);
+    console.error("\n Erro dentro do catch do next-connect:");
+    console.error(publicError);
+    return res.status(publicError.statusCode).json(publicError);
+  },
+});
