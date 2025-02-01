@@ -7,48 +7,52 @@ import { InternalServerError, MethodNotAllowedError } from "infra/errors";
 const router = createRouter();
 
 router.get(async (req, res) => {
-  const dbClient = await database.getNewClient();
+  let dbClient;
 
-  const defaultMigrationOptions = {
-    dbClient,
-    dir: resolve("infra", "migrations"),
-    direction: "up",
-    dryRun: true,
-    verbose: true,
-    migrationsTable: "pgmigrations",
-  };
+  try {
+    const defaultMigrationOptions = {
+      dbClient: await database.getNewClient(),
+      dir: resolve("infra", "migrations"),
+      direction: "up",
+      dryRun: true,
+      verbose: true,
+      migrationsTable: "pgmigrations",
+    };
 
-  const pendingMigrations = await migrationRunner({
-    ...defaultMigrationOptions,
-  });
+    const pendingMigrations = await migrationRunner({
+      ...defaultMigrationOptions,
+    });
 
-  await dbClient.end();
-
-  return res.status(200).json(pendingMigrations);
+    return res.status(200).json(pendingMigrations);
+  } finally {
+    await dbClient.end();
+  }
 });
 
 router.post(async (req, res) => {
-  const dbClient = await database.getNewClient();
+  let dbClient;
 
-  const defaultMigrationOptions = {
-    dbClient,
-    dir: resolve("infra", "migrations"),
-    direction: "up",
-    dryRun: true,
-    verbose: true,
-    migrationsTable: "pgmigrations",
-  };
+  try {
+    const defaultMigrationOptions = {
+      dbClient: await database.getNewClient(),
+      dir: resolve("infra", "migrations"),
+      direction: "up",
+      dryRun: true,
+      verbose: true,
+      migrationsTable: "pgmigrations",
+    };
 
-  const migratedMigrations = await migrationRunner({
-    ...defaultMigrationOptions,
-    dryRun: false,
-  });
+    const migratedMigrations = await migrationRunner({
+      ...defaultMigrationOptions,
+      dryRun: false,
+    });
 
-  await dbClient.end();
-
-  return migratedMigrations.length === 0
-    ? res.status(200).json(migratedMigrations)
-    : res.status(201).json(migratedMigrations);
+    return migratedMigrations.length === 0
+      ? res.status(200).json(migratedMigrations)
+      : res.status(201).json(migratedMigrations);
+  } finally {
+    await dbClient.end();
+  }
 });
 
 export default router.handler({
