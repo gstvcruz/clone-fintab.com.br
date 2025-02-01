@@ -18,7 +18,7 @@ describe("POST /api/v1/migrations", () => {
       expect(body.length).toBeGreaterThan(0);
     });
 
-    test("Run migrations after already applied", async () => {
+    test("Run migrations after they have been applied", async () => {
       const res = await fetch("http://localhost:3000/api/v1/migrations", {
         method: "POST",
       });
