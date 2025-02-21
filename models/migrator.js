@@ -19,8 +19,12 @@ async function listPendingMigrations() {
       dbClient,
       dryRun: true,
     });
-  } catch {
-    throw new ServiceError();
+  } catch (err) {
+    const serviceError = new ServiceError({
+      message: "Erro ao listar as migrações pendentes.",
+      cause: err,
+    });
+    throw serviceError;
   } finally {
     await dbClient?.end();
   }
@@ -35,8 +39,12 @@ async function runPendingMigrations() {
       dbClient,
       dryRun: false,
     });
-  } catch {
-    throw new ServiceError();
+  } catch (err) {
+    const serviceError = new ServiceError({
+      message: "Erro ao rodar as migrações pendentes.",
+      cause: err,
+    });
+    throw serviceError;
   } finally {
     await dbClient?.end();
   }
