@@ -10,4 +10,11 @@ router.get(async (req, res) => {
   res.status(200).json(userFound);
 });
 
+router.patch(async (req, res) => {
+  const username = req.query.username;
+  const userInputValues = req.body;
+  const updatedUser = await user.update(username, userInputValues);
+  res.status(200).json(updatedUser);
+});
+
 export default router.handler(errorHandlers);

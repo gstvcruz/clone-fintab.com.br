@@ -1,4 +1,3 @@
-import password from "models/password";
 import orchestrator from "tests/orchestrator";
 
 beforeAll(async () => {
@@ -31,6 +30,7 @@ describe("GET /api/v1/users/[username]", () => {
 
       const body = await res.json();
       expect(body).toEqual({
+        id: body.id,
         username: exactMatchTestUser.username,
         email: exactMatchTestUser.email,
         password: body.password,
@@ -63,6 +63,7 @@ describe("GET /api/v1/users/[username]", () => {
 
       const body = await res.json();
       expect(body).toEqual({
+        id: body.id,
         username: mismatchTestUser.username,
         email: mismatchTestUser.email,
         password: body.password,
