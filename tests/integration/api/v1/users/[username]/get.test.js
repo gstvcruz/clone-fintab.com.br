@@ -30,8 +30,10 @@ describe("GET /api/v1/users/[username]", () => {
 
       const body = await res.json();
       expect(body).toEqual({
+        id: body.id,
         username: exactMatchTestUser.username,
         email: exactMatchTestUser.email,
+        password: body.password,
         created_at: body.created_at,
         updated_at: body.updated_at,
       });
@@ -61,8 +63,10 @@ describe("GET /api/v1/users/[username]", () => {
 
       const body = await res.json();
       expect(body).toEqual({
+        id: body.id,
         username: mismatchTestUser.username,
         email: mismatchTestUser.email,
+        password: body.password,
         created_at: body.created_at,
         updated_at: body.updated_at,
       });
