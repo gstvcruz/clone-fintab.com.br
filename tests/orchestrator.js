@@ -29,11 +29,11 @@ async function runPendingMigrations() {
   await migrator.runPendingMigrations();
 }
 
-async function createUser() {
+async function createUser(userObject) {
   return await user.create({
-    username: getFakeUsername(),
-    email: getFakeEmail(),
-    password: getFakePassword(),
+    username: userObject?.username || getFakeUsername(),
+    email: userObject?.email || getFakeEmail(),
+    password: userObject?.password || getFakePassword(),
   });
 }
 
