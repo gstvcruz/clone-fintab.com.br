@@ -31,36 +31,6 @@ async function create(userInputValues) {
   }
 }
 
-async function findOneByUsername(username) {
-  const userFound = await runSelectQuery(username);
-  return userFound;
-
-  async function runSelectQuery(username) {
-    const res = await database.query({
-      text: `
-        SELECT
-          *
-        FROM
-          users
-        WHERE
-          LOWER(username) = LOWER($1)
-        LIMIT
-          1
-      ;`,
-      values: [username],
-    });
-
-    if (res.rowCount === 0) {
-      throw new NotFoundError({
-        message: "Usuário não encontrado",
-        action: "Verifique o nome de usuário informado.",
-      });
-    }
-
-    return res.rows[0];
-  }
-}
-
 async function update(username, userInputValues) {
   const currentUser = await findOneByUsername(username);
 
@@ -105,6 +75,66 @@ async function update(username, userInputValues) {
         userWithNewValues.password,
       ],
     });
+
+    return res.rows[0];
+  }
+}
+
+async function findOneByUsername(username) {
+  const userFound = await runSelectQuery(username);
+  return userFound;
+
+  async function runSelectQuery(username) {
+    const res = await database.query({
+      text: `
+        SELECT
+          *
+        FROM
+          users
+        WHERE
+          LOWER(username) = LOWER($1)
+        LIMIT
+          1
+      ;`,
+      values: [username],
+    });
+
+    if (res.rowCount === 0) {
+      throw new NotFoundError({
+        message: "Usuário não encontrado.",
+        action: "Verifique o nome de usuário informado.",
+      });
+    }
+
+    return res.rows[0];
+  }
+}
+
+async function findOneByEmail(email) {
+  const userFound = await runSelectQuery(email);
+  return userFound;
+
+  async function runSelectQuery(email) {
+    const res = await database.query({
+      text: `
+        SELECT
+          *
+        FROM
+          users
+        WHERE
+          LOWER(email) = LOWER($1)
+        LIMIT
+          1
+      ;`,
+      values: [email],
+    });
+
+    if (res.rowCount === 0) {
+      throw new NotFoundError({
+        message: "E-mail não encontrado.",
+        action: "Verifique o e-mail informado.",
+      });
+    }
 
     return res.rows[0];
   }
@@ -159,8 +189,9 @@ async function hashPasswordInObject(userInputValues) {
 
 const user = {
   create,
-  findOneByUsername,
   update,
+  findOneByUsername,
+  findOneByEmail,
 };
 
 export default user;

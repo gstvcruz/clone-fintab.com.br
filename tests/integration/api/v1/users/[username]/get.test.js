@@ -59,7 +59,7 @@ describe("GET /api/v1/users/[username]", () => {
       const body = await res.json();
       expect(body).toEqual({
         name: "NotFoundError",
-        message: "Usuário não encontrado",
+        message: "Usuário não encontrado.",
         action: "Verifique o nome de usuário informado.",
         status_code: 404,
       });

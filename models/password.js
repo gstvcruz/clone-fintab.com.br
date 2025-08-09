@@ -1,6 +1,6 @@
 import bcryptjs from "bcryptjs";
 
-const ROUNDS = process.env.NODE_ENV === "production" ? 14 : 1;
+const ROUNDS = process.env.NODE_ENV === "production" ? 14 : 11;
 const PEPPER = process.env.PEPPER;
 
 async function hash(password) {
